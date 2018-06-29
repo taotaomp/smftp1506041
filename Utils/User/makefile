@@ -1,6 +1,9 @@
 OBJDIR = obj
 VPATH = src
-ALL:UserCtrlUtils.o
+ALL:$(OBJDIR) UserCtrlUtils.o
+
+$(OBJDIR):
+	mkdir -p ./$@
 
 UserCtrlUtils.o:%.o:%.c
 	$(CC) -c -o $(OBJDIR)/$@ $^

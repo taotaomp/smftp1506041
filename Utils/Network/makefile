@@ -1,6 +1,9 @@
 OBJDIR = obj
 VPATH = src
-ALL:CmdTransUtils.o FileTransUtils.o InitUtils.o TransmissionUtils.o
+ALL:$(OBJDIR) CmdTransUtils.o FileTransUtils.o InitUtils.o TransmissionUtils.o
+
+$(OBJDIR):
+	mkdir -p ./$@
 
 CmdTransUtils.o:%.o:%.c
 	$(CC) -c -o $(OBJDIR)/$@ $^
