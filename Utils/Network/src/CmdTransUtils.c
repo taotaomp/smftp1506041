@@ -10,7 +10,7 @@ cmd_container:待发送命令容器（已TLV封装）
 **************************************/
 int sendCmd(int socket,char* cmd_container){
 	int err;
-	err = write(socket,cmd_container,1024);
+	err = write(socket,cmd_container,255);
 	if(-1 == err){
 		perror("sendCmd");
 	}
@@ -27,7 +27,7 @@ flag:recv()操作方式
 int recvMessage(int socket,char* message_container,int flag){
 	int err;
 	message_container[0] = '\0';		//初始化message_container
-	err = recv(socket,message_container,1024,flag);
+	err = recv(socket,message_container,255,flag);
 	if(-1 == err){
 		perror("recvMessage");
 	}

@@ -21,6 +21,9 @@ int main(int args,char *argv[]){
 
 	while(1){
 		socketClient = acceptServer(socketServer,&sockaddrServer,&sock_length);
-		dealLogin(socketClient);
+		if(0 == dealLogin(socketClient)){
+			break;
+		}
+
 	}
 }

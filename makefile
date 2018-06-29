@@ -13,7 +13,7 @@ relay:
 	$(MAKE) -C Client
 
 appServer:$(ServerOBJ)/Server.o $(ServerOBJ)/InterfaceServer.o $(UtilsFileOBJ)/FileCtrlUtils.o $(UtilsNetworkOBJ)/CmdTransUtils.o $(UtilsNetworkOBJ)/FileTransUtils.o $(UtilsNetworkOBJ)/InitUtils.o $(UtilsNetworkOBJ)/TransmissionUtils.o $(UtilsUserOBJ)/UserCtrlUtils.o
-	$(CC) -o $@ $^ -g
+	$(CC) -o $@ $^ -g -lcrypt
 
 appClient:$(ClientOBJ)/Client.o $(ClientOBJ)/InterfaceClient.o $(UtilsFileOBJ)/FileCtrlUtils.o $(UtilsNetworkOBJ)/CmdTransUtils.o  $(UtilsNetworkOBJ)/FileTransUtils.o $(UtilsNetworkOBJ)/InitUtils.o $(UtilsNetworkOBJ)/TransmissionUtils.o
 	$(CC) -o $@ $^ -g

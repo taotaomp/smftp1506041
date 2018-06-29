@@ -10,7 +10,7 @@ Server.o:%.o:%.c
 	$(CC) -c -o $(OBJDIR)/$@ $^
 
 InterfaceServer.o:%.o:%.c
-	$(CC) -c -o $(OBJDIR)/$@ $^
+	$(CC) -c -o $(OBJDIR)/$@ $^ 
 
 clear:
 	$(RM) $(OBJDIR)/*.o
