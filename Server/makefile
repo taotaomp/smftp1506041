@@ -4,12 +4,15 @@ UtilsFileOBJ = Utils/File/obj
 UtilsNetworkOBJ = Utils/Network/obj
 UtilsUserOBJ = Utils/User/obj
 
-ALL:Server.o InterfaceServer.o
+ALL:Server.o UserLoginProcess.o CmdProcess.o
 
 Server.o:%.o:%.c
 	$(CC) -c -o $(OBJDIR)/$@ $^
 
-InterfaceServer.o:%.o:%.c
+UserLoginProcess.o:%.o:%.c
+	$(CC) -c -o $(OBJDIR)/$@ $^ 
+
+CmdProcess.o:%.o:%.c
 	$(CC) -c -o $(OBJDIR)/$@ $^ 
 
 clear:

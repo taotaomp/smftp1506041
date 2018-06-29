@@ -7,11 +7,19 @@
 #include <string.h>
 
 /*****************************
+创建文件函数
+*****************************/
+int createFile(char *file_name){
+	int err;
+	err = creat(file_name,S_IRWXU);		//创建文件，权限值0700
+}
+
+/*****************************
 打开文件函数
 *****************************/
 int openFile(char *file_name){
 	int err;
-	err = open(file_name,O_WRONLY|O_EXCL);
+	err = open(file_name,O_RDWR|O_EXCL);
 	if(-1 == err){
 		perror("file_open");
 	}
@@ -36,7 +44,7 @@ char *file_container[1024];
 
 /****************************
 文件读取函数
-return the count of read line
+return the count of read line(从0开始计数)
 ****************************/
 int readFile(int fd,char *file_container[]){
 	ssize_t read_count;

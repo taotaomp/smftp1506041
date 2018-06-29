@@ -1,11 +1,14 @@
 OBJDIR = obj
 VPATH = src
-ALL:Client.o InterfaceClient.o
+ALL:Client.o UserLogin.o CmdCommit.o
 
 Client.o:%.o:%.c
 	$(CC) -c -o $(OBJDIR)/$@ $^
 
-InterfaceClient.o:%.o:%.c
+UserLogin.o:%.o:%.c
+	$(CC) -c -o $(OBJDIR)/$@ $^
+
+CmdCommit.o:%.o:%.c
 	$(CC) -c -o $(OBJDIR)/$@ $^
 
 clear:

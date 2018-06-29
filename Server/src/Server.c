@@ -1,6 +1,7 @@
 #include <sys/socket.h>
 #include <netinet/in.h>		//struct sockaddr_in
-#include "../prih/InterfaceServer.h"
+#include "../prih/UserLoginProcess.h"
+#include "../prih/CmdProcess.h"
 #include "../../Utils/Network/prih/InitUtils.h"
 #include "../../Utils/Other/prih/StandardMacro.h"
 
@@ -21,8 +22,8 @@ int main(int args,char *argv[]){
 
 	while(1){
 		socketClient = acceptServer(socketServer,&sockaddrServer,&sock_length);
-		if(0 == dealLogin(socketClient)){
-			break;
+		if(0 == processLogin(socketClient)){
+			listenCmd(socketClient);
 		}
 
 	}

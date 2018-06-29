@@ -10,7 +10,7 @@
 /*********************************
 处理登录函数
 *********************************/
-int dealLogin(int socket){
+int processLogin(int socket){
 	char sendTLVValueContainer[256];					//待发送TLV数据容器
 	char recvTLVValueContainer[256];					//接收TLV数据容器
 	char *unpacketTLVContainer[3];						//TLV拆包数据容器
