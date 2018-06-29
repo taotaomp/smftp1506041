@@ -11,7 +11,7 @@ int initSocket(){
 	int err;
 	err = socket(AF_INET,SOCK_STREAM,0);
 	if(-1 == err){
-		perror("init_socket");
+		perror("initSocket");
 		exit(EXIT_FAILURE);
 	}
 	return err;

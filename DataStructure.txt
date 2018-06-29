@@ -1,0 +1,7 @@
+TLV
+客户端提交：							服务器回复：
+USERNAME	LENGTH	nsername		TRUE|FALSE		LENGTH	VALUE
+PASSWD		LENGTH	password		TRUE|FALSE		LENGTH	VALUE
+CMD			LENGTH	ls|pwd|cd 		TRUE|FALSE		LENGTH	CMD_response|error_message
+PULL		LENGTH	file_path		TRUE|FALSE		LENGTH	file_lines|error_message
+PUSH		LENGTH	file_path

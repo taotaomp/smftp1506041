@@ -1,0 +1,4 @@
+*.o
+
+appClient
+appServer

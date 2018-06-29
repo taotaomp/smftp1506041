@@ -1,6 +1,6 @@
 #include <netinet/in.h>
 #include <stdio.h>
-typedef socketaddr_store struct sockaddr_in
+#define socketaddr_store struct sockaddr_in
 
 /*
 char *file_container[1024];
