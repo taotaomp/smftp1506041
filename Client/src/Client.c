@@ -14,5 +14,5 @@ int main(int args,int **argv){
 
 	connectClient(socketClient,&sockaddrClient);
 	loginGuide(socketClient);
-	commitCmd(socketClient,"ls");
+	commitCmd(socketClient,"pwd");
 }

@@ -20,7 +20,7 @@ void commitCmd(int socket,char* cmd_container){
 
 	recvMessage(socket,recvTLVValueContainer,MSG_WAITALL);						//阻塞等待服务器返回的消息
 	unpacketTLV(recvTLVValueContainer,unpacketTLVContainer);					//解包TLV信息
-	puts(unpacketTLVContainer[0]);
+
 	if(0 == strcmp(unpacketTLVContainer[0],"TRUE")){
 		puts(unpacketTLVContainer[2]);				//输出TLV中的value
 	}else if(0 == strcmp(unpacketTLVContainer[0],"TRUE")){
@@ -58,6 +58,7 @@ int pullFileCmd(int socket,char* file_name_container){
 		fileLineRecvedLength = strlen(unpacketTLVContainer[2]);
 		for (i = fileLineRecvedLength; i > 0; i--){
 			fileLineReal = fileLineReal + (unpacketTLVContainer[2][i]-48);
+			//网页字符串转数字
 		}		
 	}else if(unpacketTLVContainer[0] == "FALSE"){
 		printf("错误！\n");
