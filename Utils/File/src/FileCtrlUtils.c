@@ -52,6 +52,8 @@ int readFile(int fd,char *file_container[]){
 	int i;
 
 	for(i = 0; ; i++){
+		file_container[i] = (char *)malloc(1024);		//这里反复实验了多次，在调用这个指针当读取的文件的容器时，
+														//必须先用malloc做动态内存分配，不然会报“bad Address”错误(日了狗了)
 		read_count = read(fd,file_container[i],1024);
 
 		if(-1 == read_count){

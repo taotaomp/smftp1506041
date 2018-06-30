@@ -20,10 +20,10 @@ void commitCmd(int socket,char* cmd_container){
 
 	recvMessage(socket,recvTLVValueContainer,MSG_WAITALL);						//阻塞等待服务器返回的消息
 	unpacketTLV(recvTLVValueContainer,unpacketTLVContainer);					//解包TLV信息
-
-	if(unpacketTLVContainer[0] == "TRUE"){
+	puts(unpacketTLVContainer[0]);
+	if(0 == strcmp(unpacketTLVContainer[0],"TRUE")){
 		puts(unpacketTLVContainer[2]);				//输出TLV中的value
-	}else if(unpacketTLVContainer[0] == "FALSE"){
+	}else if(0 == strcmp(unpacketTLVContainer[0],"TRUE")){
 		printf("错误！\n");
 		puts(unpacketTLVContainer[2]);				//输出TLV中的（错误信息）
 	}
