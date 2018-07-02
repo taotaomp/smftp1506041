@@ -50,6 +50,7 @@ char *file_container[1024];
 
 /****************************
 读取文件函数
+描述：文件读取每次读取1024字节，以此为一行，容器最大1024行。
 fd:文件描述符
 file_container:文件字节容器
 返回值:读取的文件行数(从0开始计数)
@@ -78,7 +79,7 @@ int readFile(int fd,char *file_container[]){
 }
 
 /*************************
-写入文件函数
+写入文件函数(弃用)
 fd:文件描述符
 file_container:文件字节容器
 line_count:文件行数
@@ -89,4 +90,13 @@ void writeFile(int fd,char *file_container[],int line_conut){
 	for(i = 0; i < line_conut; i++){
 		write(fd,file_container[i],strlen(file_container[i]));
 	}
+}
+
+/************************
+写入文件函数
+fd:文件描述符
+fileSingleLine:单行文件字节流
+************************/
+int writeFileForSingleLine(int fd,char *fileSingleLine){
+	return write(fd,fileSingleLine,1024);
 }

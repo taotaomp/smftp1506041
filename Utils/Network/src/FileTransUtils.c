@@ -1,6 +1,8 @@
 #include <netinet/in.h>
 #include <stdio.h>
-#define socketaddr_store struct sockaddr_in
+#include <sys/socket.h>		//MSG_DONTWAIT MSG_WAITALL
+#include "../prih/TransmissionUtils.h"
+#include "../../File/prih/FileCtrlUtils.h"
 
 /*
 char *file_container[1024];
@@ -8,15 +10,18 @@ char *file_container[1024];
 
 /*************************
 发送文件函数
-参数：套接字文件描述符，套接字数据结构，文件容器，文件行数
+sfd:套接字文件描述符
+file_container:文件容器
+line_count:文件行数
 *************************/
-void sendFile(int sfd,socketaddr_store *sockaddr_to,char *file_container[],int line_count){
+void sendFile(int sfd,char *file_container[],int line_count){
 	ssize_t err;
-	socklen_t len = sizeof(*sockaddr_to);
+	char TLVValueContainer[1280];					//TLV数据容器1280=1024+256
 	int i;
 
 	for(i = 0; i < line_count; i++){
-		//err = sendto(sfd,file_container[i],1024,0,(struct sockaddr*)sockaddr_to,len);
+		packetTLV(TLVValueContainer,"FILE",strlen(file_container[i],file_container[i]));
+		err = send(sfd,TLVValueContainer,1280,MSG_DONTWAIT);		//不阻塞，立即返回
 		if(-1 == err){
 			perror("sendFile");
 		}
@@ -26,17 +31,26 @@ void sendFile(int sfd,socketaddr_store *sockaddr_to,char *file_container[],int l
 
 /************************
 接收文件函数
-参数：套接字文件描述符，套接字数据结构，文件容器，文件行数
+sfd:套接字文件描述符
+fd:文件描述符
+line_count:文件行数
 *************************/
-void receiveFile(int sfd,socketaddr_store *sockaddr_from,char *file_container[],int line_count){
+void receiveFile(int sfd,int fd,int line_count){
 	ssize_t err;
-	socklen_t len = sizeof(*sockaddr_from);
+	char TLVValueContainer[1280];							//TLV数据容器1280=1024+256
+	char *unpacketTLVContainer[3];							//TLV拆包数据容器
 	int i;
 
-	for(i = 0; i < line_count; i++){
-		//err = recvfrom(sfd,file_container[i],1024,0,(struct sockaddr*)sockaddr_to,len);
+	for(i = 0 ; i <= line_count ; i++){
+		err = recv(sfd,TLVValueContainer,1280,MSG_WAITALL);
 		if(-1 == err){
-			perror("recvfrom");
+			perror("receiveFile");
+			return;
+		}
+		unpacketTLV(TLVValueContainer,unpacketTLVContainer);	//拆包TLV数据
+		if(0 == strcmp("FILE",unpacketTLVContainer[0])){
+			writeFileForSingleLine(fd,unpacketTLVContainer[2]);
 		}
 	}
+	return;
 }

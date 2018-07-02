@@ -53,6 +53,8 @@ int pullFileCmd(int socket,char* file_name_container){
 	unpacketTLV(recvTLVValueContainer,unpacketTLVContainer);					//解包TLV信息
 
 	if(unpacketTLVContainer[0] == "TRUE"){			//拉取文件，成功后TLV的Value字段会有文件的“行数”
+		//创建文件
+		//获取文件行数，并转换为int
 		sscanf(unpacketTLVContainer[2],"%d",&fileLine);
 		
 				
