@@ -8,6 +8,8 @@
 
 /*****************************
 创建文件函数
+file_name:文件名（可带路径）
+返回值:文件描述符
 *****************************/
 int createFile(char *file_name){
 	int err;
@@ -16,6 +18,8 @@ int createFile(char *file_name){
 
 /*****************************
 打开文件函数
+file_name:文件名（可带路径）
+返回值：文件描述符
 *****************************/
 int openFile(char *file_name){
 	int err;
@@ -28,6 +32,8 @@ int openFile(char *file_name){
 
 /**************************
 关闭文件函数
+fd:文件描述符
+返回值:成功与否（0/-1）
 **************************/
 int closeFile(int fd){
 	int err;
@@ -43,8 +49,10 @@ char *file_container[1024];
 */
 
 /****************************
-文件读取函数
-return the count of read line(从0开始计数)
+读取文件函数
+fd:文件描述符
+file_container:文件字节容器
+返回值:读取的文件行数(从0开始计数)
 ****************************/
 int readFile(int fd,char *file_container[]){
 	ssize_t read_count;
@@ -70,7 +78,10 @@ int readFile(int fd,char *file_container[]){
 }
 
 /*************************
-文件写入函数
+写入文件函数
+fd:文件描述符
+file_container:文件字节容器
+line_count:文件行数
 *************************/
 void writeFile(int fd,char *file_container[],int line_conut){
 	int i;

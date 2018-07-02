@@ -1,7 +1,13 @@
 TLV
 客户端提交：							服务器回复：
-USERNAME	LENGTH	nsername		TRUE|FALSE		LENGTH	VALUE
-PASSWD		LENGTH	password		TRUE|FALSE		LENGTH	VALUE
-CMD			LENGTH	ls|pwd|cd 		TRUE|FALSE		LENGTH	CMD_response|error_message
-PULL		LENGTH	file_path		TRUE|FALSE		LENGTH	file_lines|error_message
-PUSH		LENGTH	file_path
+1	USERNAME	LENGTH	nsername		TRUE|FALSE		LENGTH	VALUE
+
+2	PASSWD		LENGTH	password		TRUE|FALSE		LENGTH	VALUE
+
+3	CMD			LENGTH	ls|pwd|cd 		TRUE|FALSE		LENGTH	CMD_response|error_message
+
+4	PULL		LENGTH	file_path		TRUE|FALSE		LENGTH	file_lines|error_message
+	ACK			LENGTH	recv_Ready		FILESTART
+
+5	PUSH		LENGTH	file_path
+

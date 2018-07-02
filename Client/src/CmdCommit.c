@@ -6,7 +6,7 @@
 #include "../../Utils/Network/prih/CmdTransUtils.h"
 
 /*************************************
-提交命令
+提交CMD命令
 socket:套接字文件描述符
 cmd_container:命令（ls|pwd|cd）
 *************************************/
@@ -43,8 +43,6 @@ int pullFileCmd(int socket,char* file_name_container){
 	char recvTLVValueContainer[256];
 	char *unpacketTLVContainer[3];
 
-	char fileLineRecved[4];					//接收的存储文件的行数
-	int fileLineRecvedLength;
 	int fileLineReal = 0;						//转换成int的
 	int i;
 
@@ -55,11 +53,9 @@ int pullFileCmd(int socket,char* file_name_container){
 	unpacketTLV(recvTLVValueContainer,unpacketTLVContainer);					//解包TLV信息
 
 	if(unpacketTLVContainer[0] == "TRUE"){			//拉取文件，成功后TLV的Value字段会有文件的“行数”
-		fileLineRecvedLength = strlen(unpacketTLVContainer[2]);
-		for (i = fileLineRecvedLength; i > 0; i--){
-			fileLineReal = fileLineReal + (unpacketTLVContainer[2][i]-48);
-			//网页字符串转数字
-		}		
+		sscanf(unpacketTLVContainer[2],"%d",&fileLine);
+		
+				
 	}else if(unpacketTLVContainer[0] == "FALSE"){
 		printf("错误！\n");
 		puts(unpacketTLVContainer[2]);				//输出TLV中的value（错误信息）

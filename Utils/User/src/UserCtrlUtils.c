@@ -35,6 +35,8 @@ struct spwd {
 void getSalt(char *saltContainer,char *passwdInShadow);
 /******************************
 通过用户名获取用户信息
+usr_info_container:spwd结构体指针（容器）
+user_name:用户名
 ******************************/
 userinfo* getUserInfo(userinfo* usr_info_container,char* user_name){
 	usr_info_container = getspnam(user_name);
@@ -47,8 +49,9 @@ userinfo* getUserInfo(userinfo* usr_info_container,char* user_name){
 
 /*****************************
 比对用户名和密码
-0 same
--1 not same
+usr_info_container:spwd结构体指针（容器）
+user_password:用户密码
+返回值:是否相同 (0/-1)
 *****************************/
 int compareUserPassword(userinfo* usr_info_container,char* user_password){
 	char saltContainer[128];
@@ -64,6 +67,8 @@ int compareUserPassword(userinfo* usr_info_container,char* user_password){
 /*****************************
 获取shadow中密码（加密字符串）的salt
 描述：在第三个$前面的字符串是salt
+saltContainer:获取的salt的容器
+passwdInShadow:spwd结构体中的密码（已加密）值
 *****************************/
 void getSalt(char *saltContainer,char *passwdInShadow){
     int i;

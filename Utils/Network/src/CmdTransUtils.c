@@ -6,7 +6,7 @@
 命令发送函数
 socket:套接字文件描述符
 cmd_container:待发送命令容器（已TLV封装）
-返回:已发送的长度
+返回值:已发送的长度
 **************************************/
 int sendCmd(int socket,char* cmd_container){
 	int err;

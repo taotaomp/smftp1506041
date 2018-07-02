@@ -9,6 +9,8 @@
 
 /*********************************
 处理登录函数
+socket:套接字文件描述符
+返回值:登陆是否成功（0/-1）
 *********************************/
 int processLogin(int socket){
 	char sendTLVValueContainer[256];					//待发送TLV数据容器

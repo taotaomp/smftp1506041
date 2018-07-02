@@ -12,6 +12,7 @@
 int processCmdLs(char* resultContainer,char* cmdValue);
 /*************************
 侦听命令函数
+socket:套接字文件描述符
 *************************/
 void listenCmd(int socket){
 	char sendTLVValueContainer[256];					//待发送TLV数据容器
@@ -46,6 +47,7 @@ void listenCmd(int socket){
 CMD命令处理函数
 resultContainer:命令执行结果的容器
 cmdValue:命令值
+返回值:命令是否执行成功（0/-1）
 ************************/
 int processCmd(char* resultContainer,char* cmdValue){
 	char shellCmdContainer[256];	//shell命令容器
@@ -86,23 +88,34 @@ int processCmd(char* resultContainer,char* cmdValue){
 
 /*********************************
 PULL命令处理函数
+socket:套接字文件描述符
+fileName:文件名
+返回值:
 *********************************/
-int processPULL(char* fileName){
+int processPULL(int socket,char* fileName){
 	char sendTLVValueContainer[256];					//待发送TLV数据容器
 	char recvTLVValueContainer[256];					//接收TLV数据容器
+	char *unpacketTLVContainer[3];
+
 	char *file_container[1024];
-	int fileLine;
+	int fileLine_raw;
+	char fileLine[10];
 	int fd;
 
 	fd = openFile(fileName);
-	if(-1 != fd){
-		fileLine = readFile(fd,file_container);
-		packetTLV(sendTLVValueContainer,"TRUE",,cmdExecResultContainer);
-		//网页数字转字符串
-	}else{
+	if(-1 != fd){										//文件存在并被打开
+		fileLine_raw = readFile(fd,file_container);
+		sprintf(fileLine,"%d",fileLine_raw);			//将整型转化为字符串
+		packetTLV(sendTLVValueContainer,"TRUE",strlen(fileLine),fileLine);
+		sendCmd(socket,sendTLVValueContainer);
+		
+		recvMessage(socket,recvTLVValueContainer,MSG_WAITALL);
+		unpacketTLV(recvTLVValueContainer,unpacketTLVContainer);
 
+	}else{												//文件打开失败
+		packetTLV(sendTLVValueContainer,"FALSE",strlen("文件不存在"),"文件不存在");
+		sendCmd(socket,sendTLVValueContainer);
 	}
 	
-	packetTLV(sendTLVValueContainer,"TRUE",strlen(cmdExecResultContainer),cmdExecResultContainer);
-	sendCmd();
+	
 }

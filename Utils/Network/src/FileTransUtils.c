@@ -7,7 +7,7 @@ char *file_container[1024];
 */
 
 /*************************
-文件发送函数
+发送文件函数
 参数：套接字文件描述符，套接字数据结构，文件容器，文件行数
 *************************/
 void sendFile(int sfd,socketaddr_store *sockaddr_to,char *file_container[],int line_count){
@@ -25,7 +25,7 @@ void sendFile(int sfd,socketaddr_store *sockaddr_to,char *file_container[],int l
 }
 
 /************************
-文件接收函数
+接收文件函数
 参数：套接字文件描述符，套接字数据结构，文件容器，文件行数
 *************************/
 void receiveFile(int sfd,socketaddr_store *sockaddr_from,char *file_container[],int line_count){
