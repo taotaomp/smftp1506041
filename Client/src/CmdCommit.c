@@ -31,7 +31,7 @@ void commitCmd(int socket,char* cmd_container){
 
 	if(0 == strcmp(unpacketTLVContainer[0],"TRUE")){
 		puts(unpacketTLVContainer[2]);				//输出TLV中的value
-	}else if(0 == strcmp(unpacketTLVContainer[0],"TRUE")){
+	}else if(0 == strcmp(unpacketTLVContainer[0],"FALSE")){
 		printf("错误！\n");
 		puts(unpacketTLVContainer[2]);				//输出TLV中的（错误信息）
 	}
@@ -60,7 +60,6 @@ int pullFileCmd(int socket,char* file_name_container_in_Server,char *file_name_c
 	if(-1 == fd){
 		return -1;
 	}
-	
 
 	packetTLV(sendTLVValueContainer,"PULL",strlen(file_name_container_in_Server),file_name_container_in_Server);
 	sendCmd(socket,sendTLVValueContainer);										//发送提交或拉取命令
@@ -69,20 +68,23 @@ int pullFileCmd(int socket,char* file_name_container_in_Server,char *file_name_c
 	recvMessageWithIOReuse(socket,recvTLVValueContainer);
 	unpacketTLV(recvTLVValueContainer,unpacketTLVContainer);					//解包TLV信息
 
-	if(unpacketTLVContainer[0] == "TRUE"){			//拉取文件，成功后TLV的Value字段会有文件的“行数”
+	if(0 == strcmp("TRUE",unpacketTLVContainer[0])){			//拉取文件，成功后TLV的Value字段会有文件的“行数”
 		//获取文件行数，并转换为int
 		sscanf(unpacketTLVContainer[2],"%d",&fileLineReal);
 
+		printf("打包ACK\n");
 		packetTLV(sendTLVValueContainer,"ACK",strlen("recv_Ready"),"recv_Ready");
 		sendCmd(socket,sendTLVValueContainer);	
-		
+		printf("开始接收文件\n");
 		receiveFile(socket,fd,fileLineReal);
 		
 				
-	}else if(unpacketTLVContainer[0] == "FALSE"){
+	}else if(0 == strcmp("FALSE",unpacketTLVContainer[0])){
 		printf("错误！\n");
 		puts(unpacketTLVContainer[2]);				//输出TLV中的value（错误信息）
 	}
+
+	closeFile(fd);
 }
 
 /**********************************

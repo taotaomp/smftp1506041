@@ -100,7 +100,8 @@ void writeFile(int fd,char *file_container[],int line_conut){
 写入文件函数
 fd:文件描述符
 fileSingleLine:单行文件字节流
+返回值:写入的字数
 ************************/
-int writeFileForSingleLine(int fd,char *fileSingleLine){
-	return write(fd,fileSingleLine,1024);
+int writeFileForSingleLine(int fd,char *fileSingleLine,int length){
+	return write(fd,fileSingleLine,length);
 }

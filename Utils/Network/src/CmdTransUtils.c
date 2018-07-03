@@ -19,7 +19,7 @@ int sendCmd(int socket,char* cmd_container){
 }
 
 /*************************************
-消息接收函数（基于recv()）(弃用)
+消息接收函数（基于recv()）
 socket:套接字文件描述符
 cmd_container:接收的消息的容器（TLV形式封装）
 flag:recv()操作方式
@@ -46,13 +46,16 @@ int recvMessageWithIOReuse(int socket,char* message_container){
 	message_container[0] = '\0';		//初始化message_container
 
 	err = selectSfdRead(socket);
+	printf("已完成阻塞\n");
 	if((-1 == err)){
 		perror("selectSfdRead");
 	}else if(err > 0){
 		err = read(socket,message_container,256);
+		puts(message_container);
 		if(-1 == err){
 			perror("recvMessage");
 		}
 	}
+
 	return err;	
 }

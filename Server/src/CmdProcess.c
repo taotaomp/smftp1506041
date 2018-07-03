@@ -11,6 +11,7 @@
 
 //函数声明
 int processCmd(char* resultContainer,char* cmdValue);
+int processPULL(int socket,char* fileName);
 /*************************
 侦听命令函数
 socket:套接字文件描述符
@@ -39,10 +40,12 @@ void listenCmd(int socket){
 				sendCmd(socket,sendTLVValueContainer);		
 				printf("完成发送\n");
 			}else{
-				packetTLV(sendTLVValueContainer,"FAlSE",strlen("执行错误"),"执行错误");
+				packetTLV(sendTLVValueContainer,"FALSE",strlen("执行错误"),"执行错误");
 				sendCmd(socket,sendTLVValueContainer);
 			}
 		}else if(0 == strcmp("PULL",unpacketTLVContainer[0])){	//判断TLV的Type头是否为PULL
+			printf("接收到PULL数据\n");
+			processPULL(socket,unpacketTLVContainer[2]);
 
 		}else if(0 == strcmp("PUSH",unpacketTLVContainer[0])){	//判断TLV的Type头是否为PUSH
 
@@ -102,7 +105,7 @@ fileName:文件名
 *********************************/
 int processPULL(int socket,char* fileName){
 	char sendTLVValueContainer[256];					//待发送TLV数据容器
-	char recvTLVValueContainer[256];					//接收TLV数据容器
+	char pullRecvTLVValueContainer[256];					//接收TLV数据容器
 	char *unpacketTLVContainer[3];
 
 	char *file_container[1024];
@@ -117,10 +120,16 @@ int processPULL(int socket,char* fileName){
 		packetTLV(sendTLVValueContainer,"TRUE",strlen(fileLine),fileLine);	//打包给客户端的回应信息
 		sendCmd(socket,sendTLVValueContainer);			//发送回应信息
 		
-		//recvMessage(socket,recvTLVValueContainer,MSG_WAITALL);	//阻塞接收客户端的ACK回应
-		recvMessageWithIOReuse(socket,recvTLVValueContainer);		//接收客户端的ACK回应
-		unpacketTLV(recvTLVValueContainer,unpacketTLVContainer);	//解包
+		printf("开始接收\n");
+		//recvMessage(socket,pullRecvTLVValueContainer,MSG_WAITALL);	//阻塞接收客户端的ACK回应
+		recvMessageWithIOReuse(socket,pullRecvTLVValueContainer);		//接收客户端的ACK回应
+		puts(pullRecvTLVValueContainer);
+		printf("开始解包\n");
+		unpacketTLV(pullRecvTLVValueContainer,unpacketTLVContainer);	//解包
+		printf("解包完成\n");
+
 		if(0 == strcmp("ACK",unpacketTLVContainer[0])){
+			printf("开始发送文件\n");
 			sendFile(socket,file_container,fileLine_raw);			//发送文件
 		}
 

@@ -53,7 +53,7 @@ void receiveFile(int sfd,int fd,int line_count){
 			}
 			unpacketTLV(TLVValueContainer,unpacketTLVContainer);	//拆包TLV数据
 			if(0 == strcmp("FILE",unpacketTLVContainer[0])){
-				writeFileForSingleLine(fd,unpacketTLVContainer[2]);	//写入一行数据
+				writeFileForSingleLine(fd,unpacketTLVContainer[2],strlen(unpacketTLVContainer[2]));	//写入一行数据
 			}
 		}
 	}
