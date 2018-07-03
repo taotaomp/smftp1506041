@@ -7,7 +7,7 @@ TLV
 3	CMD			LENGTH	ls|pwd|cd 		TRUE|FALSE		LENGTH	CMD_response|error_message
 
 4	PULL		LENGTH	file_path		TRUE|FALSE		LENGTH	file_lines|error_message
-	ACK			LENGTH	recv_Ready		FILESTART
+	ACK			LENGTH	recv_Ready		FILE 			LENGTH	bytes
 
 5	PUSH		LENGTH	file_path
 

@@ -5,11 +5,12 @@
 #include <stdlib.h>		//system()
 #include "../../Utils/Network/prih/TransmissionUtils.h"
 #include "../../Utils/Network/prih/CmdTransUtils.h"
+#include "../../Utils/Network/prih/FileTransUtils.h"
 #include "../../Utils/User/prih/UserCtrlUtils.h"
 #include "../../Utils/File/prih/FileCtrlUtils.h"
 
 //函数声明
-int processCmdLs(char* resultContainer,char* cmdValue);
+int processCmd(char* resultContainer,char* cmdValue);
 /*************************
 侦听命令函数
 socket:套接字文件描述符
@@ -23,13 +24,20 @@ void listenCmd(int socket){
 
 	while(1){
 		recvMessage(socket,recvTLVValueContainer,MSG_WAITALL);
+		//recvMessageWithIOReuse(socket,recvTLVValueContainer);
+		printf("接收到数据\n");
 		unpacketTLV(recvTLVValueContainer,unpacketTLVContainer);
+		printf("解包完成\n");
+		puts(unpacketTLVContainer[2]);
 
 		if(0 == strcmp("CMD",unpacketTLVContainer[0])){			//判断TLV的Type头是否为CMD
+			printf("判断TLV的Type头是否为CMD\n");
 			err = processCmd(cmdExecResultContainer,unpacketTLVContainer[2]);		//调用命令处理函数
+			printf("完成命令处理\n");
 			if(0 == err){
 				packetTLV(sendTLVValueContainer,"TRUE",strlen(cmdExecResultContainer),cmdExecResultContainer);
 				sendCmd(socket,sendTLVValueContainer);		
+				printf("完成发送\n");
 			}else{
 				packetTLV(sendTLVValueContainer,"FAlSE",strlen("执行错误"),"执行错误");
 				sendCmd(socket,sendTLVValueContainer);
@@ -106,11 +114,17 @@ int processPULL(int socket,char* fileName){
 	if(-1 != fd){										//文件存在并被打开
 		fileLine_raw = readFile(fd,file_container);
 		sprintf(fileLine,"%d",fileLine_raw);			//将整型转化为字符串
-		packetTLV(sendTLVValueContainer,"TRUE",strlen(fileLine),fileLine);
-		sendCmd(socket,sendTLVValueContainer);
+		packetTLV(sendTLVValueContainer,"TRUE",strlen(fileLine),fileLine);	//打包给客户端的回应信息
+		sendCmd(socket,sendTLVValueContainer);			//发送回应信息
 		
-		recvMessage(socket,recvTLVValueContainer,MSG_WAITALL);
-		unpacketTLV(recvTLVValueContainer,unpacketTLVContainer);
+		//recvMessage(socket,recvTLVValueContainer,MSG_WAITALL);	//阻塞接收客户端的ACK回应
+		recvMessageWithIOReuse(socket,recvTLVValueContainer);		//接收客户端的ACK回应
+		unpacketTLV(recvTLVValueContainer,unpacketTLVContainer);	//解包
+		if(0 == strcmp("ACK",unpacketTLVContainer[0])){
+			sendFile(socket,file_container,fileLine_raw);			//发送文件
+		}
+
+
 
 	}else{												//文件打开失败
 		packetTLV(sendTLVValueContainer,"FALSE",strlen("文件不存在"),"文件不存在");

@@ -14,5 +14,6 @@ int main(int args,int **argv){
 
 	connectClient(socketClient,&sockaddrClient);
 	loginGuide(socketClient);
-	commitCmd(socketClient,"pwd");
+	commitCmd(socketClient,"ls");
+	//pullFileCmd(socketClient,"DataStructure.txt","DataStructure.txt");
 }

@@ -1,6 +1,7 @@
 #include <sys/socket.h>
 #include <unistd.h>
 #include <stdio.h>
+#include "../../Other/prih/IOMoniterUtils.h"	//IO复用功能
 
 /**************************************
 命令发送函数
@@ -18,7 +19,7 @@ int sendCmd(int socket,char* cmd_container){
 }
 
 /*************************************
-消息接收函数（基于recv()）
+消息接收函数（基于recv()）(弃用)
 socket:套接字文件描述符
 cmd_container:接收的消息的容器（TLV形式封装）
 flag:recv()操作方式
@@ -32,4 +33,26 @@ int recvMessage(int socket,char* message_container,int flag){
 		perror("recvMessage");
 	}
 	return err;
+}
+
+/***********************************
+带IO复用的消息接收函数
+socket:套接字文件描述符
+cmd_container:接收的消息的容器（TLV形式封装）
+返回:已接收的长度|0超时|-1错误
+***********************************/
+int recvMessageWithIOReuse(int socket,char* message_container){
+	int err;
+	message_container[0] = '\0';		//初始化message_container
+
+	err = selectSfdRead(socket);
+	if((-1 == err)){
+		perror("selectSfdRead");
+	}else if(err > 0){
+		err = read(socket,message_container,256);
+		if(-1 == err){
+			perror("recvMessage");
+		}
+	}
+	return err;	
 }

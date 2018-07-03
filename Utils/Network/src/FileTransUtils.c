@@ -3,6 +3,9 @@
 #include <sys/socket.h>		//MSG_DONTWAIT MSG_WAITALL
 #include "../prih/TransmissionUtils.h"
 #include "../../File/prih/FileCtrlUtils.h"
+#include "../../Other/prih/IOMoniterUtils.h"	//IO复用功能
+#include <string.h>
+#include <unistd.h>
 
 /*
 char *file_container[1024];
@@ -20,7 +23,7 @@ void sendFile(int sfd,char *file_container[],int line_count){
 	int i;
 
 	for(i = 0; i < line_count; i++){
-		packetTLV(TLVValueContainer,"FILE",strlen(file_container[i],file_container[i]));
+		packetTLV(TLVValueContainer,"FILE",strlen(file_container[i]),file_container[i]);
 		err = send(sfd,TLVValueContainer,1280,MSG_DONTWAIT);		//不阻塞，立即返回
 		if(-1 == err){
 			perror("sendFile");
@@ -42,14 +45,16 @@ void receiveFile(int sfd,int fd,int line_count){
 	int i;
 
 	for(i = 0 ; i <= line_count ; i++){
-		err = recv(sfd,TLVValueContainer,1280,MSG_WAITALL);
-		if(-1 == err){
-			perror("receiveFile");
-			return;
-		}
-		unpacketTLV(TLVValueContainer,unpacketTLVContainer);	//拆包TLV数据
-		if(0 == strcmp("FILE",unpacketTLVContainer[0])){
-			writeFileForSingleLine(fd,unpacketTLVContainer[2]);
+		err = selectSfdRead(sfd);
+		if(err > 0){						//大于0表示可读
+			err = read(sfd,TLVValueContainer,1280);
+			if(-1 == err){
+				perror("receiveFile");
+			}
+			unpacketTLV(TLVValueContainer,unpacketTLVContainer);	//拆包TLV数据
+			if(0 == strcmp("FILE",unpacketTLVContainer[0])){
+				writeFileForSingleLine(fd,unpacketTLVContainer[2]);	//写入一行数据
+			}
 		}
 	}
 	return;

@@ -14,6 +14,10 @@ file_name:文件名（可带路径）
 int createFile(char *file_name){
 	int err;
 	err = creat(file_name,S_IRWXU);		//创建文件，权限值0700
+	if(-1 == err){
+		perror("createFile");
+	}
+	return err;
 }
 
 /*****************************
