@@ -9,5 +9,7 @@ TLV
 4	PULL		LENGTH	file_path		TRUE|FALSE		LENGTH	file_lines|error_message
 	ACK			LENGTH	recv_Ready		FILE 			LENGTH	bytes
 
-5	PUSH		LENGTH	file_path
+5	PUSH		LENGTH	file_path		TRUE|FALSE		LENGTH	VALUE|error_message
+	ACK			LENGTH	file_lines|-1	ACK				LENGTH	VALUE|CANCEL
+	FILE 		LENGTH	bytes
 

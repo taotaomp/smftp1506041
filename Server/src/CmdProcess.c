@@ -134,7 +134,6 @@ int processPULL(int socket,char* fileName){
 		}
 
 
-
 	}else{												//文件打开失败
 		packetTLV(sendTLVValueContainer,"FALSE",strlen("文件不存在"),"文件不存在");
 		sendCmd(socket,sendTLVValueContainer);

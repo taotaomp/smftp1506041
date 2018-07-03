@@ -53,7 +53,6 @@ int pullFileCmd(int socket,char* file_name_container_in_Server,char *file_name_c
 	char *unpacketTLVContainer[3];
 
 	int fileLineReal = 0;						//转换成int的文件行数
-	int i;
 	int fd;
 
 	fd = createFile(file_name_container_in_Client);
@@ -85,10 +84,49 @@ int pullFileCmd(int socket,char* file_name_container_in_Server,char *file_name_c
 	}
 
 	closeFile(fd);
+	return 0;
 }
 
 /**********************************
 推送文件命令
-描述：
-
+描述:客户端向服务器发送一条TLV消息：Type为PUSH，value为文件路径
+	 如果服务器上文件存在，则服务器返回的TLV消息中，Type为FALSE，value为读取的文件的“行数”
+	 如果服务器上文件不存在，则服务器返回的TLV消息中，Type为True
 **********************************/
+int pushFileCmd(int socket,char* file_name_container_in_Client,char *file_name_container_in_Server){
+	char sendTLVValueContainer[256];
+	char recvTLVValueContainer[256];
+	char *unpacketTLVContainer[3];		//TLV拆包容器
+	char *file_container[1024];			//读取文件容器
+	char userConfirmContainer;
+
+	int fd;
+	int fileLine_raw = 0;						
+	char fileLine[10];									//转换成char的文件行数
+	int userConfirmSize;
+
+	fd = openFile(file_name_container_in_Client);
+	if(-1 == fd){
+		return -1;
+	}
+
+	packetTLV(sendTLVValueContainer,"PUSH",strlen(file_name_container_in_Server),file_name_container_in_Server);
+	sendCmd(socket,sendTLVValueContainer);			//发送PUSH请求和文件的路径给服务器判断
+
+	recvMessageWithIOReuse(socket,recvTLVValueContainer);
+	unpacketTLV(recvTLVValueContainer,unpacketTLVContainer);					//解包TLV信息
+
+	fileLineReal = readFile(fd,file_container);
+	sprintf(fileLine,"%d",fileLine_raw);			//将整型转化为字符串
+
+	if(0 == strcmp("TRUE",unpacketTLVContainer[0])){	//服务器回应TRUE表明服务器不存在文件冲突
+		packetTLV(sendTLVValueContainer,"ACK",strlen(fileLine),fileLine);	//打包给服务端的回应信息
+
+	}else if(0 == strcmp("FALSE",unpacketTLVContainer[0])){
+		printf("服务器上已存在该文件，要覆盖吗?（y/s）");
+		scanf("%c",&userConfirmContainer);
+		if(userConfirmContainer == 'y'){
+
+		}else
+	}
+}
