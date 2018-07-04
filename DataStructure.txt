@@ -1,15 +1,15 @@
 TLV
-客户端提交：							服务器回复：
-1	USERNAME	LENGTH	nsername		TRUE|FALSE		LENGTH	VALUE
+客户端提交：									服务器回复：
+1	USERNAME	LENGTH	nsername			TRUE|FALSE		LENGTH	VALUE
 
-2	PASSWD		LENGTH	password		TRUE|FALSE		LENGTH	VALUE
+2	PASSWD		LENGTH	password			TRUE|FALSE		LENGTH	VALUE
 
-3	CMD			LENGTH	ls|pwd|cd 		TRUE|FALSE		LENGTH	CMD_response|error_message
+3	CMD			LENGTH	ls|pwd|cd 			TRUE|FALSE		LENGTH	CMD_response|error_message
 
-4	PULL		LENGTH	file_path		TRUE|FALSE		LENGTH	file_lines|error_message
-	ACK			LENGTH	recv_Ready		FILE 			LENGTH	bytes
+4	PULL		LENGTH	file_path			TRUE|FALSE		LENGTH	file_lines|error_message
+	ACK			LENGTH	recv_Ready			FILE 			LENGTH	bytes
 
-5	PUSH		LENGTH	file_path		TRUE|FALSE		LENGTH	VALUE|error_message
-	ACK			LENGTH	file_lines|-1	ACK				LENGTH	VALUE|CANCEL
+5	PUSH		LENGTH	file_path			TRUE|FALSE		LENGTH	You_can_upload|File_has_exist
+	ACK			LENGTH	file_lines|CANCEL	ACK				LENGTH	Upload_pls|CANCELED
 	FILE 		LENGTH	bytes
 

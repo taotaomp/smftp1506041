@@ -12,6 +12,7 @@
 //函数声明
 int processCmd(char* resultContainer,char* cmdValue);
 int processPULL(int socket,char* fileName);
+int processPUSH(int socket,char* fileName);
 /*************************
 侦听命令函数
 socket:套接字文件描述符
@@ -48,7 +49,8 @@ void listenCmd(int socket){
 			processPULL(socket,unpacketTLVContainer[2]);
 
 		}else if(0 == strcmp("PUSH",unpacketTLVContainer[0])){	//判断TLV的Type头是否为PUSH
-
+			printf("接收到PUSH数据\n");
+			processPUSH(socket,unpacketTLVContainer[2]);
 		}
 	}
 	
@@ -140,4 +142,55 @@ int processPULL(int socket,char* fileName){
 	}
 	
 	
+}
+
+/*************************************
+PUSH命令处理函数
+*************************************/
+int processPUSH(int socket,char* fileName){
+	char sendTLVValueContainer[256];					//待发送TLV数据容器
+	char recvTLVValueContainer[256];					//接收TLV数据容器
+	char *unpacketTLVContainer[3];
+
+	int fd;
+	int fileLineReal = 0;
+
+	fd = openFile(fileName);
+	if(-1 == fd){							//文件不存在
+		packetTLV(sendTLVValueContainer,"TRUE",strlen("You_can_upload"),"You_can_upload");
+		sendCmd(socket,sendTLVValueContainer);	
+	}else{									//文件存在
+		packetTLV(sendTLVValueContainer,"FALSE",strlen("File_has_exist"),"File_has_exist");
+		sendCmd(socket,sendTLVValueContainer);
+		closeFile(fd);
+	}
+
+	recvMessageWithIOReuse(socket,recvTLVValueContainer);
+	unpacketTLV(recvTLVValueContainer,unpacketTLVContainer);					//解包TLV信息
+
+	if(0 == strcmp("ACK",unpacketTLVContainer[0])){
+		if(0 == strcmp("CANCEL",unpacketTLVContainer[2])){						//客户端取消发送
+			packetTLV(sendTLVValueContainer,"ACK",strlen("CANCELED"),"CANCELED");
+			sendCmd(socket,sendTLVValueContainer);
+			return 1;
+		}else{
+			//获取文件行数，并转换为int
+			sscanf(unpacketTLVContainer[2],"%d",&fileLineReal);
+
+			if(fd != -1){	//文件存在
+				system("rm -f fileName");	//删除文件
+			}
+			fd = createFile(fileName);		//创建文件
+
+			packetTLV(sendTLVValueContainer,"ACK",strlen("Upload_pls"),"Upload_pls");
+			sendCmd(socket,sendTLVValueContainer);
+
+			receiveFile(socket,fd,fileLineReal);
+
+			closeFile(fd);
+
+			return 0;
+		}
+	}
+	return -1;
 }

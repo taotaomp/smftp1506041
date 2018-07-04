@@ -116,17 +116,32 @@ int pushFileCmd(int socket,char* file_name_container_in_Client,char *file_name_c
 	recvMessageWithIOReuse(socket,recvTLVValueContainer);
 	unpacketTLV(recvTLVValueContainer,unpacketTLVContainer);					//解包TLV信息
 
-	fileLineReal = readFile(fd,file_container);
+	fileLine_raw = readFile(fd,file_container);
 	sprintf(fileLine,"%d",fileLine_raw);			//将整型转化为字符串
 
 	if(0 == strcmp("TRUE",unpacketTLVContainer[0])){	//服务器回应TRUE表明服务器不存在文件冲突
 		packetTLV(sendTLVValueContainer,"ACK",strlen(fileLine),fileLine);	//打包给服务端的回应信息
+		sendCmd(socket,sendTLVValueContainer);			//发送回应信息
 
 	}else if(0 == strcmp("FALSE",unpacketTLVContainer[0])){
 		printf("服务器上已存在该文件，要覆盖吗?（y/s）");
 		scanf("%c",&userConfirmContainer);
 		if(userConfirmContainer == 'y'){
+			packetTLV(sendTLVValueContainer,"ACK",strlen(fileLine),fileLine);	//打包给服务端的回应信息
+		}else{
+			packetTLV(sendTLVValueContainer,"ACK",strlen("CANCEL"),"CANCEL");	//打包给服务端的回应信息
+		}
+		sendCmd(socket,sendTLVValueContainer);			//发送回应信息
+	}
 
-		}else
+	recvMessageWithIOReuse(socket,recvTLVValueContainer);
+	unpacketTLV(recvTLVValueContainer,unpacketTLVContainer);					//解包TLV信息
+
+	if(0 == strcmp("ACK",unpacketTLVContainer[0])){
+		if(0 == strcmp("Upload_pls",unpacketTLVContainer[2])){
+			sendFile(socket,file_container,fileLine_raw);
+		}else{
+			return 0;
+		}
 	}
 }
