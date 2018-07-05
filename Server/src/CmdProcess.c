@@ -27,21 +27,15 @@ void listenCmd(int socket){
 	while(1){
 		recvMessage(socket,recvTLVValueContainer,MSG_WAITALL);
 		//recvMessageWithIOReuse(socket,recvTLVValueContainer);
-		printf("接收到数据\n");
 		unpacketTLV(recvTLVValueContainer,unpacketTLVContainer);
-		printf("解包完成\n");
-		puts(unpacketTLVContainer[2]);
 
 		if(0 == strcmp("CMD",unpacketTLVContainer[0])){			//判断TLV的Type头是否为CMD
-			printf("判断TLV的Type头是否为CMD\n");
 			err = processCmd(cmdExecResultContainer,unpacketTLVContainer[2]);		//调用命令处理函数
-			printf("完成命令处理\n");
 			if(0 == err){
 				packetTLV(sendTLVValueContainer,"TRUE",strlen(cmdExecResultContainer),cmdExecResultContainer);
 				sendCmd(socket,sendTLVValueContainer);		
-				printf("完成发送\n");
 			}else{
-				packetTLV(sendTLVValueContainer,"FALSE",strlen("执行错误"),"执行错误");
+				packetTLV(sendTLVValueContainer,"FALSE",strlen("CMD_exec_error"),"CMD_exec_error");
 				sendCmd(socket,sendTLVValueContainer);
 			}
 		}else if(0 == strcmp("PULL",unpacketTLVContainer[0])){	//判断TLV的Type头是否为PULL
@@ -122,22 +116,17 @@ int processPULL(int socket,char* fileName){
 		packetTLV(sendTLVValueContainer,"TRUE",strlen(fileLine),fileLine);	//打包给客户端的回应信息
 		sendCmd(socket,sendTLVValueContainer);			//发送回应信息
 		
-		printf("开始接收\n");
 		//recvMessage(socket,pullRecvTLVValueContainer,MSG_WAITALL);	//阻塞接收客户端的ACK回应
 		recvMessageWithIOReuse(socket,pullRecvTLVValueContainer);		//接收客户端的ACK回应
-		puts(pullRecvTLVValueContainer);
-		printf("开始解包\n");
 		unpacketTLV(pullRecvTLVValueContainer,unpacketTLVContainer);	//解包
-		printf("解包完成\n");
 
 		if(0 == strcmp("ACK",unpacketTLVContainer[0])){
-			printf("开始发送文件\n");
 			sendFile(socket,file_container,fileLine_raw);			//发送文件
 		}
 
 
 	}else{												//文件打开失败
-		packetTLV(sendTLVValueContainer,"FALSE",strlen("文件不存在"),"文件不存在");
+		packetTLV(sendTLVValueContainer,"FALSE",strlen("File_not_exist"),"File_not_exist");
 		sendCmd(socket,sendTLVValueContainer);
 	}
 	

@@ -1,6 +1,6 @@
 OBJDIR = obj
 VPATH = src
-ALL:$(OBJDIR) CmdTransUtils.o FileTransUtils.o InitUtils.o TransmissionUtils.o
+ALL:$(OBJDIR) CmdTransUtils.o FileTransUtils.o InitUtils.o TransmissionUtils.o TransEncryptUtils.o
 
 $(OBJDIR):
 	mkdir -p ./$@
@@ -16,6 +16,9 @@ InitUtils.o:%.o:%.c
 
 TransmissionUtils.o:%.o:%.c
 	$(CC) -c -o $(OBJDIR)/$@ $^
+
+TransEncryptUtils.o:%.o:%.c
+	$(CC) -c -o $(OBJDIR)/$@ $^ -lcrypto
 
 clear:
 	$(RM) $(OBJDIR)/*.o

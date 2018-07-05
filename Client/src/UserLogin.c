@@ -29,7 +29,7 @@ int loginGuide(int socket){
 		userNameContainer[userNameLength-1] = '\0';										//使用read(0,xx,xx);进行输入数据时候，回把确认的回车，算成一位，
 		userNameLength--;																//附在输入的数据后面，所以应该将最后一位回车去掉（改为'\0'）
 																						//同时返回的长度也要减去1
-
+		
 		packetTLV(sendTLVValueContainer,"USERNAME",userNameLength,userNameContainer);	//TLV封装用户名信息
 		sendCmd(socket,sendTLVValueContainer);											//发送封装好的用户名信息
 		recvMessage(socket,recvTLVValueContainer,MSG_WAITALL);							//阻塞等待服务器返回的消息

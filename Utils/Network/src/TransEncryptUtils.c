@@ -6,6 +6,7 @@
 
 /**************************
 传输加密函数
+描述:结果容器的大小要等于离原始字符串的长度最近的且大于原始字符串的一个8的倍数
 raw_String:原始字符串
 str_encrypt:结果容器
 key:秘钥
@@ -23,6 +24,8 @@ int EncryptValue(char *raw_String,char *str_encrypt,char *key,int flag){
     int model;						//用于存放原始字符串长度除以8得到的余数，余数，余数
     int i,j;
     int j_model_index;				//记录当原始字符串长度不能被8整除时，进行最后一次加密开始时，应该加密的原始字符串中的开始位置
+    char temp_container[1280];
+    unsigned char temp[8];
 
     if(0 == flag){					//判断标识，确定此函数是加密还是解密函数
     	ecb_encrypt_flag = DES_ENCRYPT;
@@ -34,7 +37,6 @@ int EncryptValue(char *raw_String,char *str_encrypt,char *key,int flag){
 	DES_set_key_unchecked(&DES_key, &schedule);	//通过秘钥生成schedule
 
 	raw_String_Length = strlen(raw_String);	//得到原始字符串长度
-	printf("raw长度：%d\n",raw_String_Length);
 	model = raw_String_Length % 8;				//得到余数
 
 	if(model == 0){								//判断原始字符串的长度是否能被8整除
@@ -85,10 +87,38 @@ int EncryptValue(char *raw_String,char *str_encrypt,char *key,int flag){
 			input[i] = raw_String[j];
 		}
 		input[i] = '\0';		//使input最后一位为'\0'
+
 		DES_ecb_encrypt(&input, &output, &schedule, ecb_encrypt_flag);
-		for(i = 0,j = j_model_index; i < 8; i++,j++){
+		for(i = 0,j = j_model_index; i < 8; i++,j++){		//将output全部放到str_encrypt容器中
 			str_encrypt[j] = output[i];
 		}
+
 	}
 	return 0;
 }
+
+/**********************************
+秘钥生成函数
+key_container:秘钥容器
+**********************************/
+void generateKey(char *key_container){
+	DES_cblock DES_key;				//DES秘钥容器
+	DES_random_key(&DES_key);		//随机生成秘钥
+	memcpy(key_container,DES_key,8);//赋值
+}
+/*
+int main(){
+	char key_container[8];
+	char *value1 = "123456789";
+	char *value2 ;
+	char *value3 ;
+	value2 = (char*)malloc(16);
+	value3 = (char*)malloc(16);
+
+	generateKey(key_container);
+
+	EncryptValue(value1,value2,key_container,0);
+	puts(value2);
+	EncryptValue(value2,value3,key_container,1);
+	puts(value3);
+}*/
