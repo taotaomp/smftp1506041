@@ -16,9 +16,9 @@ int loginGuide(int socket){
 	int userNameLength;									//用户名长度容器
 	char passwdContainer[256];							//密码容器
 	int passwdLength;									//密码长度容器
-	char sendTLVValueContainer[256];					//待发送TLV数据容器
+	char sendTLVValueContainer[256];					//发送TLV数据容器
 	char recvTLVValueContainer[256];					//接收TLV数据容器
-	char *unpacketTLVContainer[3];						//TLV拆包数据容器
+	char *unpacketTLVContainer[3];						//拆包TLV数据容器
 
 	printf("FTP文件传输\n");
 	while(i < 3){

@@ -13,3 +13,7 @@ TLV
 	ACK			LENGTH	file_lines|CANCEL	ACK				LENGTH	Upload_pls|CANCELED
 	FILE 		LENGTH	bytes
 
+6	REST		LENGTH 	file_path			TRUE|FALSE		LENGTH 	You_can_download|error_message
+	ACK			LENGTH 	startingPosition	ACK				LENGTH	file_lines
+											FILE 			LENGTH	bytes
+7	BYE 		LENGTH	VALUE				

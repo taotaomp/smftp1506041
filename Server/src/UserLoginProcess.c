@@ -13,40 +13,58 @@ socket:套接字文件描述符
 返回值:登陆是否成功（0/-1）
 *********************************/
 int processLogin(int socket){
+	int i = 0;
 	char sendTLVValueContainer[256];					//待发送TLV数据容器
 	char recvTLVValueContainer[256];					//接收TLV数据容器
 	char *unpacketTLVContainer[3];						//TLV拆包数据容器
 	userinfo *userinfoContainer;						//用户信息存储容器（在UserCtrlUtils.h中定义）
 	int err;
 
-	recvMessage(socket,recvTLVValueContainer,MSG_WAITALL);
-	unpacketTLV(recvTLVValueContainer,unpacketTLVContainer);
-	if(0 == strcmp("USERNAME",unpacketTLVContainer[0])){
-		userinfoContainer = getUserInfo(userinfoContainer,unpacketTLVContainer[2]);
-		if(NULL != userinfoContainer){
-			packetTLV(sendTLVValueContainer,"TRUE",5,"VALUE");
-			sendCmd(socket,sendTLVValueContainer);	
+	while(i < 3){
+		//阻塞接收用户名信息，接收后解包
+		recvMessage(socket,recvTLVValueContainer,MSG_WAITALL);
+		unpacketTLV(recvTLVValueContainer,unpacketTLVContainer);
 
-			recvMessage(socket,recvTLVValueContainer,MSG_WAITALL);
-			unpacketTLV(recvTLVValueContainer,unpacketTLVContainer);
-			if(0 == strcmp("PASSWD",unpacketTLVContainer[0])){
-				err = compareUserPassword(userinfoContainer,unpacketTLVContainer[2]);
-				if(0 == err){
-					packetTLV(sendTLVValueContainer,"TRUE",5,"VALUE");
-					sendCmd(socket,sendTLVValueContainer);	
+		//判断TLV数据头是否为USERNAME
+		if(0 == strcmp("USERNAME",unpacketTLVContainer[0])){
+			//获取系统用户名，判断用户是否存在
+			userinfoContainer = getUserInfo(userinfoContainer,unpacketTLVContainer[2]);
+			if(NULL != userinfoContainer){		//用户存在
+				//封装TLV回复，告知客户端用户存在
+				packetTLV(sendTLVValueContainer,"TRUE",5,"VALUE");
+				sendCmd(socket,sendTLVValueContainer);	
 
-					return 0;
-				}else{
-					packetTLV(sendTLVValueContainer,"FALSE",5,"VALUE");
-					sendCmd(socket,sendTLVValueContainer);
-					return -1;
+				//阻塞接收密码信息，接收后解包
+				recvMessage(socket,recvTLVValueContainer,MSG_WAITALL);
+				unpacketTLV(recvTLVValueContainer,unpacketTLVContainer);
+
+				//判断TLV数据头是否为PASSWD
+				if(0 == strcmp("PASSWD",unpacketTLVContainer[0])){
+					//比对用户的密码是否和系统一致
+					err = compareUserPassword(userinfoContainer,unpacketTLVContainer[2]);
+					if(0 == err){	//一致
+						//封装TLV回复，告知客户端用户登录成功
+						packetTLV(sendTLVValueContainer,"TRUE",5,"VALUE");
+						sendCmd(socket,sendTLVValueContainer);	
+
+						return 0;
+					}else{
+						//封装TLV回复，告知客户端用户登录失败
+						packetTLV(sendTLVValueContainer,"FALSE",5,"VALUE");
+						sendCmd(socket,sendTLVValueContainer);
+						continue;
+					}
 				}
+			}else{
+				//封装TLV回复，告知客户端用户不存在
+				packetTLV(sendTLVValueContainer,"FALSE",5,"VALUE");
+				sendCmd(socket,sendTLVValueContainer);
+				continue;
 			}
 		}else{
-			packetTLV(sendTLVValueContainer,"FALSE",5,"VALUE");
-			sendCmd(socket,sendTLVValueContainer);
-			return -1;
+			continue;
 		}
 	}
+	//三次错误则登录失败
 	return -1;
 }
