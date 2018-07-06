@@ -205,7 +205,7 @@ int restFileCmd(int socket,char *file_name_container_in_Server,char *file_name_c
 
 	int fd;
 	int fileExistCount = 0;						//文件中已经存在的字节数
-	char *fileExistCountChar;					//转换成char的，文件中已经存在的字节数
+	char fileExistCountChar[10];				//转换成char的，文件中已经存在的字节数
 	int fileLineReal;							//存放转换成int的文件行数
 	char tempCharContainer[1];					//计算文件中已经存在的字节数时，用到的临时容器
 	int err;
@@ -219,7 +219,7 @@ int restFileCmd(int socket,char *file_name_container_in_Server,char *file_name_c
 	//封装并发送REST的TLV消息（含文件的路径）
 	packetTLV(sendTLVValueContainer,"REST",strlen(file_name_container_in_Server),file_name_container_in_Server);
 	sendCmd(socket,sendTLVValueContainer);
-
+printf("发送REST完成\n");
 	//阻塞等待服务器返回的消息，得到消息后拆解
 	err = recvMessageWithIOReuse(socket,recvTLVValueContainer);
 	if(0 == err){	//超时
@@ -238,12 +238,10 @@ int restFileCmd(int socket,char *file_name_container_in_Server,char *file_name_c
 			}
 			fileExistCount++;
 		}
-
 		//将文件字节数转换成字符串，打包成ACK的TLV后，发送
 		sprintf(fileExistCountChar,"%d",fileExistCount);
 		packetTLV(sendTLVValueContainer,"ACK",strlen(fileExistCountChar),fileExistCountChar);
 		sendCmd(socket,sendTLVValueContainer);
-
 		//阻塞等待服务器返回的消息，得到消息后拆解
 		err = recvMessageWithIOReuse(socket,recvTLVValueContainer);
 		if(0 == err){	//超时
@@ -251,12 +249,10 @@ int restFileCmd(int socket,char *file_name_container_in_Server,char *file_name_c
 			return -1;
 		}
 		unpacketTLV(recvTLVValueContainer,unpacketTLVContainer);
-
 		//判断TLV消息头部是否为ACK
 		if(0 == strcmp("ACK",unpacketTLVContainer[0])){
 			//获取文件行数，并转换为int
 			sscanf(unpacketTLVContainer[2],"%d",&fileLineReal);
-
 			//开始接收文件
 			receiveFile(socket,fd,fileLineReal);
 			return 0;

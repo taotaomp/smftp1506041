@@ -248,7 +248,7 @@ int processREST(int socket,char* fileName){
 	int offset;											//存放客户端传来的文件偏移量
 	off_t offset_result;								//存放文件偏移操作的结果
 	int fileLine_raw;									//读取的文件行数
-	char* fileLine;										//转换成char的文件行数
+	char fileLine[10];									//转换成char的文件行数
 	
 	//打开服务器上的文件
 	fd = openFile(fileName);

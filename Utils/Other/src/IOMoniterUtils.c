@@ -30,7 +30,7 @@ int selectSfdRead(int sfd){
 		perror("select");
 	}else if(err > 0){
 		if(FD_ISSET(sfd,&readSfd)){
-			printf("可读\n");
+			//printf("可读\n");
 		}
 	}
 	return err;
