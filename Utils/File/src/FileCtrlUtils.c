@@ -82,6 +82,32 @@ int readFile(int fd,char *file_container[]){
 	return read_line_count;
 }
 
+/*****************************
+二进制读取文件函数
+*****************************/
+int readFileBinary(char* fileName,void *file_container[]){
+	FILE *p_file;
+	int read_line_count = 0;
+	int i;
+	size_t read_count;
+
+	p_file = fopen(fileName,"a+");
+	if(NULL == p_file){
+		return -1;
+	}
+	for(i = 0; ; i++){
+		file_container[i] = malloc(1024);
+
+		read_count = fread(file_container[i],1024,1,p_file);
+		read_line_count++;
+		if(read_count == 0){
+			break;
+		}
+
+	}
+	return read_line_count;
+}
+
 /*************************
 写入文件函数(弃用)
 fd:文件描述符

@@ -27,10 +27,12 @@ int processLogin(int socket){
 
 		//判断TLV数据头是否为USERNAME
 		if(0 == strcmp("USERNAME",unpacketTLVContainer[0])){
+			printf("接收到用户名数据\n");
 			//获取系统用户名，判断用户是否存在
 			userinfoContainer = getUserInfo(userinfoContainer,unpacketTLVContainer[2]);
 			if(NULL != userinfoContainer){		//用户存在
 				//封装TLV回复，告知客户端用户存在
+				printf("用户名正确\n");
 				packetTLV(sendTLVValueContainer,"TRUE",5,"VALUE");
 				sendCmd(socket,sendTLVValueContainer);	
 
@@ -44,12 +46,14 @@ int processLogin(int socket){
 					err = compareUserPassword(userinfoContainer,unpacketTLVContainer[2]);
 					if(0 == err){	//一致
 						//封装TLV回复，告知客户端用户登录成功
+						printf("密码正确\n");
 						packetTLV(sendTLVValueContainer,"TRUE",5,"VALUE");
 						sendCmd(socket,sendTLVValueContainer);	
 
 						return 0;
 					}else{
 						//封装TLV回复，告知客户端用户登录失败
+						printf("密码错误\n");
 						packetTLV(sendTLVValueContainer,"FALSE",5,"VALUE");
 						sendCmd(socket,sendTLVValueContainer);
 						continue;
@@ -57,6 +61,7 @@ int processLogin(int socket){
 				}
 			}else{
 				//封装TLV回复，告知客户端用户不存在
+				printf("用户名不存在\n");
 				packetTLV(sendTLVValueContainer,"FALSE",5,"VALUE");
 				sendCmd(socket,sendTLVValueContainer);
 				continue;

@@ -185,6 +185,7 @@ int processPUSH(int socket,char* fileName){
 	int err;
 
 	//尝试打开服务器上的文件
+	printf("打开服务器上的文件\n");
 	fd = openFile(fileName);
 	if(-1 == fd){							//文件不存在
 		packetTLV(sendTLVValueContainer,"TRUE",strlen("You_can_upload"),"You_can_upload");
@@ -193,20 +194,23 @@ int processPUSH(int socket,char* fileName){
 		packetTLV(sendTLVValueContainer,"FALSE",strlen("File_has_exist"),"File_has_exist");
 		sendCmd(socket,sendTLVValueContainer);
 	}
-
+	printf("响应客户端\n");
+	printf("等待客户端回复\n");
 	//阻塞等待服务器返回的消息，得到消息后拆解
 	err = recvMessageWithIOReuse(socket,recvTLVValueContainer);
 	if(0 == err){	//超时
 		return -1;
 	}
 	unpacketTLV(recvTLVValueContainer,unpacketTLVContainer);					//解包TLV信息
-
+	printf("得到客户端回复\n");
 	//判断TLV消息头部是否为ACK
 	if(0 == strcmp("ACK",unpacketTLVContainer[0])){
+		printf("处理客户端回复\n");
 		if(0 == strcmp("CANCEL",unpacketTLVContainer[2])){						//客户端取消发送
 			//封装并发送ACK的TLV消息
 			packetTLV(sendTLVValueContainer,"ACK",strlen("CANCELED"),"CANCELED");
 			sendCmd(socket,sendTLVValueContainer);
+			printf("响应客户端\n");
 			return 1;
 
 		}else{
@@ -221,9 +225,12 @@ int processPUSH(int socket,char* fileName){
 			//封装并发送ACK的TLV消息
 			packetTLV(sendTLVValueContainer,"ACK",strlen("Upload_pls"),"Upload_pls");
 			sendCmd(socket,sendTLVValueContainer);
+			printf("响应客户端\n");
 
 			//开始接收文件
+			printf("开始接收文件\n");
 			receiveFile(socket,fd,fileLineReal);
+			printf("接收完成\n");
 
 			closeFile(fd);
 

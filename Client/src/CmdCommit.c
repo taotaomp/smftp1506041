@@ -97,6 +97,7 @@ int pullFileCmd(int socket,char* file_name_container_in_Server,char *file_name_c
 		receiveFile(socket,fd,fileLineReal);
 		
 		closeFile(fd);
+		printf("执行完成\n");
 		return 0;
 				
 	}else if(0 == strcmp("FALSE",unpacketTLVContainer[0])){
@@ -183,6 +184,7 @@ int pushFileCmd(int socket,char* file_name_container_in_Client,char *file_name_c
 	if(0 == strcmp("ACK",unpacketTLVContainer[0])){
 		if(0 == strcmp("Upload_pls",unpacketTLVContainer[2])){
 			sendFile(socket,file_container,fileLine_raw);
+			printf("执行完成\n");
 			return 0;
 		}else{				//服务器收到取消指令
 			return -1;
@@ -255,6 +257,7 @@ printf("发送REST完成\n");
 			sscanf(unpacketTLVContainer[2],"%d",&fileLineReal);
 			//开始接收文件
 			receiveFile(socket,fd,fileLineReal);
+			printf("执行完成\n");
 			return 0;
 
 		}else{
